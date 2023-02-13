@@ -14,7 +14,7 @@ export const SideBar = ({ drawerWidth = 240 }) => {
                   '& .MuiDrawer-paper':{boxSizing:'border-box', width:drawerWidth}
               }}>
               <Toolbar>
-                  <Typography variant="h6" noWrap component='div'>Joel Rafael Paredes</Typography>
+                  <Typography variant="h6" noWrap component='div'>Activity</Typography>
               </Toolbar>
               <Divider></Divider>
               <List>

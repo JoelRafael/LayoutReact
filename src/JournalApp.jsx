@@ -6,8 +6,7 @@ export const JournalApp = () => {
   return (
       <>
       <AppTheme>
-        <AppRouter>
-          
+        <AppRouter> 
         </AppRouter>
       </AppTheme>
       </>
