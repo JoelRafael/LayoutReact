@@ -1,18 +1,29 @@
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Google } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, Link, Alert } from "@mui/material";
+import {
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  Link,
+  Alert,
+} from "@mui/material";
 import { Link as routerLink } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
 import { useForm } from "../../hooks/useForm";
-import {  startGoogleSingIn, startLoginWithEmailPassword } from "../../store/thunks";
+import {
+  startGoogleSingIn,
+  startLoginWithEmailPassword,
+} from "../../store/thunks";
 
+const formData = {
+  email: "",
+  password: "",
+};
 
 export const LoginPage = () => {
-  const { email, password, onInputChange } = useForm({
-    email: "",
-    password: "",
-  });
+  const { email, password, onInputChange } = useForm(formData);
   const { status, errorMessage } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const isAuthenticating = useMemo(() => status === "checking", [status]);
@@ -20,7 +31,7 @@ export const LoginPage = () => {
   const onSubmit = (event) => {
     event.preventDefault();
     //console.log({ email, password });
-   
+
     dispatch(startLoginWithEmailPassword({ email, password }));
   };
 
@@ -29,7 +40,10 @@ export const LoginPage = () => {
   };
   return (
     <AuthLayout title="Login">
-      <form onSubmit={onSubmit} className="animate__animated animate__fadeIn animate__faster">
+      <form
+        onSubmit={onSubmit}
+        className="animate__animated animate__fadeIn animate__faster"
+      >
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
@@ -58,12 +72,12 @@ export const LoginPage = () => {
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
             <Grid
               container
-              display={!!errorMessage ? '' : 'none'}
-              sx={{mt:1}}
+              display={!!errorMessage ? "" : "none"}
+              sx={{ mt: 1 }}
             >
-              <Grid item >
-              <Alert severity="error">{errorMessage }</Alert>
-            </Grid>
+              <Grid item>
+                <Alert severity="error">{errorMessage}</Alert>
+              </Grid>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Button

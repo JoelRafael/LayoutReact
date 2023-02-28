@@ -1,8 +1,32 @@
 import { SaveOutlined } from "@mui/icons-material";
 import { Grid, Typography, Button, TextField } from "@mui/material";
 import { ImageGallery } from "../components/ImageGallery";
-
+import {useForm} from "../../hooks/useForm";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import {setActiveNote} from "../../store/journal/journaSlice";
+import { startSaveNote } from "../../store/journal/thunks";
 export const NoteView = () => {
+
+  const dispatch = useDispatch();
+
+  const  { active:note } = useSelector(state => state.journal)
+
+  const {body, title, date, onInputChange, formState} = useForm(note);
+
+  const dateString = useMemo(()=>{
+    const newDate = new Date(date);
+    return newDate.toUTCString();
+  },[date])
+
+  useEffect(()=>{
+    dispatch(setActiveNote(formState));
+  },[formState])
+
+  const onSavetNote = () =>{
+    dispatch(startSaveNote());
+  }
+
   return (
     <Grid
       className="animate__animated animate__fadeIn animate__faster"
@@ -14,12 +38,16 @@ export const NoteView = () => {
     >
       <Grid item>
         <Typography fontSize={39} fontWeight="light">
-          04 de Enero del 2023
+         {dateString}
         </Typography>
       </Grid>
 
       <Grid item>
-        <Button color="primary" sx={{ padding: 2 }}>
+        <Button 
+        onClick={onSavetNote}
+        color="primary" 
+        sx={{ padding: 2 }}
+        >
           <SaveOutlined sx={{ fontSize: 30, mr: 1 }}></SaveOutlined>
           Guardar
         </Button>
@@ -32,6 +60,9 @@ export const NoteView = () => {
           placeholder="Ingrese un titulo"
           label="Titulo"
           sx={{ border: "none", mb: 1 }}
+          name='title'
+          value={title}
+          onChange={onInputChange}
         ></TextField>
 
         <TextField
@@ -41,6 +72,9 @@ export const NoteView = () => {
           multiline
           placeholder="Que sucedio hoy?"
           minRows={5}
+          name='body'
+          value={body}
+          onChange={onInputChange}
         ></TextField>
       </Grid>
       <ImageGallery></ImageGallery>

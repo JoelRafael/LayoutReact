@@ -1,6 +1,13 @@
 import { collection, doc, setDoc } from "firebase/firestore/lite";
 import { CloudFireStore } from "../../firebase/config";
-import { addNewEmtyNote, setActiveNote, savingNewNote, setNotes } from "./journaSlice";
+import {
+  addNewEmtyNote,
+  setActiveNote,
+  savingNewNote,
+  setNotes,
+  setSaving,
+  updateNote,
+} from "./journaSlice";
 import { loadNotes } from "../../helpers/loadNotes";
 
 export const startNewNote = () => {
@@ -28,6 +35,20 @@ export const startLoadingNotes = () => {
     const { uid } = getState().auth;
     if (!uid) throw new Error("El UID del usuario no existe");
     const notes = await loadNotes(uid);
-    dispatch(setNotes(notes))
+    dispatch(setNotes(notes));
+  };
+};
+
+export const startSaveNote = () => {
+  return async (dispatch, getState) => {
+    dispatch(setSaving());
+    const { uid } = getState().auth;
+    const { active: note } = getState().journal;
+
+    const noteToFireStore = { ...note };
+    delete noteToFireStore.id;
+    const docRef = doc(CloudFireStore, `${uid}/journal/notes/${note.id}`);
+    await setDoc(docRef, noteToFireStore, { merge: true });
+    dispatch(updateNote(note));
   };
 };
