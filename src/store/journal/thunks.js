@@ -1,4 +1,4 @@
-import { collection, doc, setDoc } from "firebase/firestore/lite";
+import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
 import { CloudFireStore } from "../../firebase/config";
 import {
   addNewEmtyNote,
@@ -7,8 +7,11 @@ import {
   setNotes,
   setSaving,
   updateNote,
+  setPhotosToActiveNote,
+  deleteNoteById,
 } from "./journaSlice";
 import { loadNotes } from "../../helpers/loadNotes";
+import { fileUpload } from "../../helpers/fileUpload";
 
 export const startNewNote = () => {
   return async (dispatch, getState) => {
@@ -50,5 +53,32 @@ export const startSaveNote = () => {
     const docRef = doc(CloudFireStore, `${uid}/journal/notes/${note.id}`);
     await setDoc(docRef, noteToFireStore, { merge: true });
     dispatch(updateNote(note));
+  };
+};
+
+export const startUploadingFile = (files = []) => {
+  return async (dispatch) => {
+    dispatch(setSaving());
+    //await fileUpload(files[0]);
+    const fileUploadPromise = [];
+    for (const file of files) {
+      fileUploadPromise.push(fileUpload(file));
+    }
+    const photosUrls = await Promise.all(fileUploadPromise);
+
+    dispatch(setPhotosToActiveNote(photosUrls));
+  };
+};
+
+export const startDeletingNote = () => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth;
+    const { active: note } = getState().journal;
+
+    const docRef = doc(CloudFireStore, `${uid}/journal/notes/${note.id}`);
+    await deleteDoc(docRef);
+    console.log(note);
+    dispatch(deleteNoteById(note.id));
+    console.log(note);
   };
 };
